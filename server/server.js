@@ -1,10 +1,5 @@
-// const http = require('http')
 const express = require('express');
-
-//----------------------------
 const app = express();
-// const server = http.createServer(app);
-//----------------------------
 
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -12,24 +7,27 @@ const path = require('path');
 const cors = require('cors');
 
 //socket io initiating---------------
-// const socketio = require('socket.io');
-// const io = socketio(server);
+const socketio = require('socket.io');
+const io = socketio(server);
 //-------------------------
 
 // require schema
 const User = require('./models/userModel');
+
 // require routers
 const loginRouter = require('./routes/arena');
 const homeRouter = require('./routes/home');
 const arenaRouter = require('./routes/login');
 const userControllers = require('./controllers/userControllers');
 const port = process.env.PORT || 5000;
-// if (process.env.NODE_ENV === 'production') {
-//   app.use('/build', express.static(path.join(__dirname, '../build')));
-//   app.get('/', (req, res) => {
-//     res.sendFile(path.join(__dirname, '../index.html'));
-//   });
-// }
+
+if (process.env.NODE_ENV === 'production') {
+  app.use('/build', express.static(path.join(__dirname, '../build')));
+  app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../index.html'));
+  });
+}
+
 app.use(cors());
 app.use(express.json());
 app.use(
@@ -40,7 +38,7 @@ app.use(
 
 //set up mongoose
 const MONGO_URI =
-  'mongodb+srv://Jiajiajiayou:lijiaxin123@cluster0.9wwmn.mongodb.net/<dbname>?retryWrites=true&w=majority';
+  '';
 
 mongoose
   .connect(MONGO_URI, {
@@ -54,14 +52,15 @@ mongoose
 app.get('/', (req, res) => {
   res.json('you are in the homepage');
 });
+
 //define route handlers
-// app.use('/home', homeRouter);
-// app.use('/arena', arenaRouter);
-// app.use('/login', loginRouter);
+app.use('/home', homeRouter);
+app.use('/arena', arenaRouter);
+app.use('/login', loginRouter);
+
 // catch-all route handler for any requests to an unknown route
 app.post('/signup', (req, res) => {
   const user = new User(req.body);
-  console.log('im in the signup body');
   user.save((err, doc) => {
     if (err)
       return {
@@ -70,8 +69,8 @@ app.post('/signup', (req, res) => {
           err: 'Error occured in register. Check server logs for more details.',
         },
       };
-    // return res.status(200).json({
-    //   success: true,
+    return res.status(200).json({
+      success: true,
     return res.redirect('/home');
   });
 });
